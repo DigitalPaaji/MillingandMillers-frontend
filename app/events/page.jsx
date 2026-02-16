@@ -1,5 +1,9 @@
-import React from 'react';
+"use client"
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { FaCalendarAlt, FaMapMarkerAlt, FaClock, FaTicketAlt, FaChevronRight, FaArchive, FaNewspaper } from "react-icons/fa";
+import { base_url } from '../components/urls';
+import Link from 'next/link';
 
 const EventsPage = () => {
   
@@ -56,10 +60,29 @@ const EventsPage = () => {
     "July 2024", "June 2024", "May 2024", "April 2024", "March 2024"
   ];
 
+
+  const [event,setEvent]=useState([ ])
+
+
+ const fetchEvent = async()=>{
+  try {
+    const response = await axios.get(`${base_url}/events/get`);
+    const data = await response.data;
+    if(data.success){
+setEvent(data.data)
+    }
+  } catch (error) {
+    setEvent([ ])
+  }
+ }
+
+
+useEffect(()=>{fetchEvent()},[])
   return (
     <div className="bg-gray-50 min-h-screen font-sans">
-      
-      {/* --- HERO SECTION --- */}
+
+
+
       <div className="bg-[#222] text-white py-16 text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-64 h-64 bg-[#FF3F5A] opacity-5 rounded-full blur-3xl transform -translate-x-1/2 -translate-y-1/2"></div>
         <h1 className="text-4xl md:text-5xl font-bold mb-4 relative z-10">Upcoming Events</h1>
@@ -73,24 +96,28 @@ const EventsPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 
           <div className="lg:col-span-3 flex flex-col gap-6">
-           {events.map((event) => (
+           {event.length > 0 && event.map((event) => (
      <div 
-      key={event.id} 
+      key={event._id} 
       className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-100 p-3 flex flex-col sm:flex-row gap-3 sm:items-center"
   >
     <div className="flex-shrink-0 w-full sm:w-16 h-14 bg-gray-50 rounded-md border border-gray-200 flex flex-col items-center justify-center group-hover:bg-[#FF3F5A] group-hover:border-[#FF3F5A] transition-colors">
-      <span className="text-lg font-bold text-gray-800 leading-none group-hover:text-white">{event.day}</span>
-      <span className="text-[10px] font-bold text-[#FF3F5A] uppercase group-hover:text-white">{event.month}</span>
+      <span className="text-[10px] font-bold text-[#FF3F5A] uppercase group-hover:text-white">   {new Date(event.event_date).getFullYear()}</span>
+     
+      <span className="text-lg font-bold text-gray-800 leading-none group-hover:text-white">{new Date(event.event_date).getDate()}</span>
+      <span className="text-[10px] font-bold text-[#FF3F5A] uppercase group-hover:text-white">            {new Date(event.event_date).toLocaleString("en-US", {
+  month: "short",
+})}</span>
     </div>
 
 
     <div className="flex-1 min-w-0">
       <div className="flex flex-wrap items-center gap-2 mb-1">
         <span className="bg-red-50 text-[#FF3F5A] text-[10px] font-bold px-1.5 py-0.5 rounded border border-red-100 uppercase tracking-wide">
-          {event.category}
+          {event.tag}
         </span>
         <h3 className="text-sm sm:text-base font-bold text-gray-800 truncate group-hover:text-[#FF3F5A] transition-colors">
-          {event.title}
+          {event.event}
         </h3>
       </div>
       
@@ -99,33 +126,27 @@ const EventsPage = () => {
         <span className="flex items-center gap-1">
           <FaMapMarkerAlt className="text-[#FF3F5A]" size={10} /> {event.location}
         </span>
-        <span className="flex items-center gap-1">
+        {/* <span className="flex items-center gap-1">
           <FaClock className="text-[#FF3F5A]" size={10} /> {event.time}
-        </span>
+        </span> */}
       </div>
 
-      {/* Description (Truncated to 1 line) */}
       <p className="text-xs text-gray-400 line-clamp-1">
-        {event.desc}
+        {event.dis}
       </p>
     </div>
 
-    {/* 3. Small Action Button */}
-    <button className="flex-shrink-0 text-xs font-bold bg-white text-[#FF3F5A] border border-[#FF3F5A] px-3 py-1.5 rounded hover:bg-[#FF3F5A] hover:text-white transition-colors whitespace-nowrap">
-      Register
-    </button>
+    <Link href={event.url} target='_blank' className="flex-shrink-0 text-xs font-bold bg-white text-[#FF3F5A] border border-[#FF3F5A] px-3 py-1.5 rounded hover:bg-[#FF3F5A] hover:text-white transition-colors whitespace-nowrap">
+      View
+    </Link>
 
   </div>
 ))}
           </div>
 
-          {/* === RIGHT COLUMN (1/4) - SIDEBAR === */}
           <div className="lg:col-span-1 space-y-8">
-            
-            {/* Sticky Container */}
             <div className="sticky top-24 space-y-8">
 
-              {/* 1. Recent Posts Widget */}
               <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
                  <div className="flex items-center gap-2 mb-4 border-b-2 border-[#FF3F5A] pb-2 w-fit">
                     <FaNewspaper className="text-[#FF3F5A]" />
@@ -133,17 +154,16 @@ const EventsPage = () => {
                  </div>
                  <div className="flex flex-col gap-4">
                     {recentPosts.map((post, i) => (
-                      <a key={i} href="#" className="group flex gap-3 items-start">
+                      <Link key={i} href="#" className="group flex gap-3 items-start">
                         <FaChevronRight className="mt-1 text-[#FF3F5A] text-[10px] flex-shrink-0 group-hover:translate-x-1 transition-transform" />
                         <p className="text-sm text-gray-600 font-medium group-hover:text-[#FF3F5A] transition-colors leading-snug">
                           {post}
                         </p>
-                      </a>
+                      </Link>
                     ))}
                  </div>
               </div>
 
-              {/* 2. Archives Widget */}
               <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
                  <div className="flex items-center gap-2 mb-4 border-b-2 border-[#FF3F5A] pb-2 w-fit">
                     <FaArchive className="text-[#FF3F5A]" />

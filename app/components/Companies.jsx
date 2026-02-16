@@ -1,8 +1,25 @@
-import React from 'react'
+"use client"
+import axios from 'axios'
+import React, { useEffect, useState } from 'react'
 import { FaArrowRight } from 'react-icons/fa6'
+import { base_url, img_url } from './urls'
+import Link from 'next/link'
 
 const Companies = () => {
-    const imgs  = ["company1.jpg","company2.jpg","company3.jpg","company4.jpg",]
+    const [focusCompaines,setFocusCompaines] = useState([ ])
+ const fetChCompany = async()=>{
+  try {
+    const response = await axios.get(`${base_url}/compaines/get/random`)
+    const data = await response.data;
+setFocusCompaines(data.allComp)
+  } catch (error) {
+    setFocusCompaines([ ])
+  }
+ }
+
+useEffect(()=>{
+  fetChCompany()
+},[])
   return (
     <div>
         <div className='container mx-auto px-4'>
@@ -19,12 +36,7 @@ const Companies = () => {
        </div>
         </div>
      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-
-{imgs.map((item,index)=><img src={item} key={index} className='shadow-md shadow-amber-100 border border-gray-600/50 cursor-pointer' />)}
-
-
-
-     </div>
+{focusCompaines.length > 0 &&  focusCompaines.map((item,index)=><Link key={index} href={item?.link} target='_blank' > <img src={`${img_url}${item.image}`} key={index} className='shadow-md shadow-amber-100 border border-gray-600/50 cursor-pointer' /></Link>)}  </div>
     
     
 

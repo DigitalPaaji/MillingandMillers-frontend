@@ -1,6 +1,9 @@
-import React from "react";
+"use client"
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
+import axios from "axios";
+import { base_url } from "./urls";
 
 const eventsData = [
   {
@@ -60,6 +63,27 @@ const eventsData = [
 ];
 
 const Events = () => {
+  
+  const [event,setEvent]=useState([ ])
+
+
+ const fetchEvent = async()=>{
+  try {
+    const response = await axios.get(`${base_url}/events/get`);
+    const data = await response.data;
+    if(data.success){
+setEvent(data.data)
+    }
+  } catch (error) {
+    setEvent([ ])
+  }
+ }
+
+
+useEffect(()=>{fetchEvent()},[])
+
+
+
   return (
     <div className="  bg-gray-50 font-sans">
       <div className="container px-4 mx-auto">
@@ -74,16 +98,16 @@ const Events = () => {
           </div>
                 
              <div>
-              <p  className="hidden sm:flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-[#FF3F5A] transition-colors">
+              <Link href={"/events"}  className="hidden sm:flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-[#FF3F5A] transition-colors">
       
             View More <FaArrowRight size={12} />
-              </p>
+              </Link>
              </div>
               </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {eventsData.map((event) => (
+          { event.length >0 &&  event.slice(0,6).map((event) => (
             <div
-              key={event.id}
+              key={event._id}
               className="group bg-white rounded-xl overflow-hidden border border-gray-100 hover:border-[#FF3F5A]/30 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
             >
               <div className="p-3 flex gap-5">
@@ -91,17 +115,22 @@ const Events = () => {
                 {/* 1. Date Badge */}
                 <div className="flex-shrink-0 flex flex-col items-center justify-center w-14 h-16 bg-gray-100 rounded-lg group-hover:bg-[#FF3F5A] transition-colors duration-300">
                   <span className="text-[10px] font-bold text-gray-500 uppercase group-hover:text-white transition-colors">
-                    {event.month}
+                    {new Date(event.event_date).toLocaleString("en-US", {
+  month: "short",
+})}
                   </span>
                   <span className="text-xl font-black text-gray-800 group-hover:text-white transition-colors">
-                    {event.day}
+                    {new Date(event.event_date).getDate()}
+                  </span>
+                   <span className="text-[10px] font-bold text-gray-500 uppercase group-hover:text-white transition-colors">
+                    {new Date(event.event_date).getFullYear()}
                   </span>
                 </div>
 
                 {/* 2. Event Details */}
                 <div className="flex-grow">
                    <h3 className="text-lg font-bold text-gray-800 mb-1 leading-tight group-hover:text-[#FF3F5A] transition-colors line-clamp-2">
-                     {event.title}
+                     {event.event}
                    </h3>
                    
                    <div className="flex items-center text-xs text-gray-500 mb-2">
@@ -110,16 +139,17 @@ const Events = () => {
                    </div>
 
                    <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-4">
-                      {event.desc}
+                      {event.dis}
                    </p>
 
-                   {/* 3. Action Link */}
+            
                    <Link 
-                     href={`/events/${event.id}`}
+                     href={`${event.url}`}
+                     target="_blank"
                      className="inline-flex items-center text-xs font-bold uppercase tracking-wider text-gray-900 border-b-2 border-transparent group-hover:border-[#FF3F5A] transition-all pb-0.5"
                    >
-                     Register Now
-                   </Link>
+                  View
+                   </Link> 
                 </div>
               </div>
             </div>

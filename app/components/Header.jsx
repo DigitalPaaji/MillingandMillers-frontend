@@ -1,18 +1,23 @@
 "use client"
 import Link from 'next/link'
 import Image from 'next/image' // Import Next.js Image component
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaFacebookF, FaInstagram, FaPinterest, FaYoutube } from "react-icons/fa"
 import { FaXTwitter } from "react-icons/fa6"
 import Navbar from './Navbar'
 // import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
+import axios from 'axios'
+import { base_url } from './urls'
+import Add from './Add'
 
 
 const Header = () => {
-  // Memoize date to prevent unnecessary recalculations if parent re-renders
-  const todayDate = new Date().toLocaleDateString("en-US", {
+ const [recentPosts,setRecentPosts]=useState([ ])
+ 
+ 
+ const todayDate = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -25,6 +30,21 @@ const Header = () => {
     "Weather: Heatwave expected to continue through Friday."
   ];
 
+   const fetchArticle=async()=>{
+     try {
+       const response = await axios.get(`${base_url}/articles/topviews`);
+       const data = await response.data;
+       if(data.success){
+ setRecentPosts(data.data)
+       }
+     } catch (error) {
+setRecentPosts([ ])
+     }
+   }
+
+useEffect(()=>{
+  fetchArticle()
+},[])
   return (
     <header className="bg-white font-sans">
       {/* Top Bar - Darker background for contrast or subtle gray */}
@@ -49,19 +69,18 @@ const Header = () => {
     <div className="h-8 w-full overflow-hidden "> 
       <Swiper
         direction={'vertical'}
-        loop={true} // Enables Infinity Loop
+        loop={true} 
         autoplay={{
-          delay: 3000, // Time in ms before sliding (3 seconds)
-        //   disableOnInteraction: false,
+          delay: 3000, 
         }}
         modules={[Autoplay]}
         className="mySwiper h-full"
       >
-        {news.map((item, index) => (
+        {recentPosts.length > 0 && recentPosts.map((item, index) => (
           <SwiperSlide key={index} className="flex items-center justify-center ">
-            <span className="text-xs sm:text-sm text-gray-700 hover:text-red-600 transition-colors duration-200 cursor-pointer truncate block w-full align-middle pt-1.5">
-              {item}
-            </span>
+            <Link href={`/articles/${item.slug}`} className="text-xs sm:text-sm  text-black  hover:text-red-600  duration-200 cursor-pointer  block w-full align-middle pt-1.5">
+              {item.title.slice(0,50)} . . .
+            </Link>
           </SwiperSlide>
         ))}
       </Swiper>
@@ -102,42 +121,31 @@ const Header = () => {
       </div>
 
       {/* Main Header Area (Logo & Banner) */}
-      <div className=" py-2 ">
-        <div className="container px-4 mx-auto px-4">
+      <div className=" py-1 ">
+        <div className="container px-4 mx-auto">
           <div className="flex flex-row justify-between items-center gap-2 md:gap-6">
 
-            {/* Logo Section */}
-            <div className="flex-shrink-0">
+           
               <Link href="/">
                
                
                 <Image 
-                  src="/logo.png" 
+                  src="/logo2.png" 
                   alt="Site Logo" 
                   width={300} 
                   height={100} 
-                  className="h-12 md:h-20 w-auto object-contain"
+                  className="h-12 md:h-24 p-0 m-0 w-full"
                   priority 
                 />
+              
               </Link>
-            </div>
+           
 
           
             <div className="w-full  md:w-2/3  flex justify-center md:justify-end ">
-           
-       
-
-                 <img 
-                  src="/banner1.jpg" 
-                  alt="Advertisement Banner" 
-                  fill
-                  className=" object-contain   object-center"
-                  />
-             
-           
-            </div>
-
-          </div>
+        <Add count={6}/>
+        </div>
+        </div>
         </div>
       </div>
       <Navbar />

@@ -1,4 +1,5 @@
 "use client"
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { FaFilePdf, FaSearch, FaCalendarAlt, FaDownload, FaExternalLinkAlt, FaChevronRight, FaLandmark } from "react-icons/fa";
 
@@ -223,12 +224,12 @@ const PoliciesPage = () => {
 
                             {/* Button */}
                             <div className="flex-shrink-0">
-                                <a 
+                                <Link
                                     href={policy.link} 
                                     className="flex items-center justify-center gap-2 px-4 py-2 rounded border border-gray-200 text-gray-600 text-sm font-bold hover:bg-[#FF3F5A] hover:border-[#FF3F5A] hover:text-white transition-all w-full md:w-auto"
                                 >
                                     Read Here <FaExternalLinkAlt size={10} />
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     ))

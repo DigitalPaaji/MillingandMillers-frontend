@@ -3,7 +3,7 @@ import ArticalCompo from './ArticalCompo';
 
 const page = async({params}) => {
     const {slug} = await params;
-console.log(slug)
+
   return (
 <ArticalCompo slug={slug} />
   )

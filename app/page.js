@@ -13,15 +13,15 @@ export default function Home() {
   <>
   <Herosection />
   <Topnews />
-  <Add />
+  <Add count={1}/>
   <Events />
-  <Add />
+  <Add  count={2} />
   <Biofuel />
-  <Add />
+  <Add   count={3}/>
   <WheatSection />
-  <Add />
+  <Add   count={4}/>
  <Companies />
-  <Add />
+  <Add  count={5} />
 <Government_policies />
 
 

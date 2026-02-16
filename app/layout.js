@@ -3,6 +3,8 @@ import "./globals.css";
 import Header from "./components/Header";
 import Head from "next/head";
 import Footer from "./components/Footer";
+import LayoutCompo from "./LayoutCompo";
+
 
 
 export const metadata = {
@@ -11,6 +13,10 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+
+
+  
+
   return (
     <html lang="en">
  <Head>
@@ -26,9 +32,9 @@ export default function RootLayout({ children }) {
       <body
         className={``}
       >
-        <Header />
-        {children}
-        <Footer />
+        <LayoutCompo>
+          {children}
+        </LayoutCompo>
       </body>
     </html>
   );
